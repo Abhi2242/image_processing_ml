@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Image Processing Test</string>
+    <string name="img">img</string>
+</resources>
