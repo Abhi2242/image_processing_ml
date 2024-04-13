@@ -83,7 +83,17 @@
         android:text="Start Tour"
         android:layout_marginBottom="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_skip_tour"
         app:layout_constraintStart_toStartOf="parent"/>
+
+    <Button
+        android:id="@+id/btn_skip_tour"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Skip Tour"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btn_start_tour"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

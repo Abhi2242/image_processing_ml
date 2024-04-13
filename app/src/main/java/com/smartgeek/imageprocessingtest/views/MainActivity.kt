@@ -20,9 +20,9 @@ import android.os.HandlerThread
 import android.util.Log
 import android.view.Surface
 import android.view.TextureView
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
-import android.widget.Toast
 import com.smartgeek.imageprocessingtest.R
 import com.smartgeek.imageprocessingtest.ml.AutoModel4
 import com.smartgeek.imageprocessingtest.model.PupilDistanceModel
@@ -45,8 +45,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var imageProcessor: ImageProcessor
     private val paint = Paint()
     private val paintYellow = Paint()
-    private val distanceList: ArrayList<PupilDistanceModel> = arrayListOf()
+    private val paintBlue = Paint()
+    private var distanceList: ArrayList<PupilDistanceModel> = arrayListOf()
+    private var mDistanceList: ArrayList<PupilDistanceModel> = arrayListOf()
     private lateinit var btnNext: Button
+    private var count = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,11 +68,9 @@ class MainActivity : AppCompatActivity() {
         handlerThread.start()
         handler = Handler(handlerThread.looper)
 
-        btnNext.isClickable = false
-        btnNext.alpha = .5f
-
         paint.color = Color.RED
         paintYellow.color = Color.GREEN
+        paintBlue.color = Color.BLUE
 
         ttvTextureView.surfaceTextureListener = object : TextureView.SurfaceTextureListener {
             override fun onSurfaceTextureAvailable(p0: SurfaceTexture, p1: Int, p2: Int) {
@@ -103,7 +104,6 @@ class MainActivity : AppCompatActivity() {
                 val h = bitmap.height
                 val w = bitmap.width
                 var x = 0
-                var count = 0
 
                 val leftEyeIndex = 2
                 val rightEyeIndex = 3
@@ -137,34 +137,27 @@ class MainActivity : AppCompatActivity() {
                 // Calculate the real-world distance between left and right eyes
                 val realWorldEyeDistance = ratio * bitmapEyeDistance
 
-//                if (50.00f < realWorldEyeDistance && realWorldEyeDistance < cardDistance){
-//                    Log.v("eye distance", realWorldEyeDistance.toString())
-//                }
-
-//                // Draw circles at left and right eye positions
-//                canvas.drawCircle(bitmapLeftEyeX, bitmapLeftEyeY, 10f, paintYellow)
-//                canvas.drawCircle(bitmapRightEyeX, bitmapRightEyeY, 10f, paintYellow)
-
                 while (x <= 49) {
                     if (outputFeature0[x + 2] > 0.45) {
                         canvas.drawCircle(
                             outputFeature0[x + 1] * w,
                             outputFeature0[x] * h,
-                            10f,
+                            6f,
                             paint
                         )
                         // Draw circles at left and right eye positions
-                        canvas.drawCircle(bitmapLeftEyeX, bitmapLeftEyeY, 10f, paintYellow)
-                        canvas.drawCircle(bitmapRightEyeX, bitmapRightEyeY, 10f, paintYellow)
+//                        canvas.drawCircle(bitmapLeftEyeX, bitmapLeftEyeY, 10f, paintYellow)
+//                        canvas.drawCircle(bitmapRightEyeX, bitmapRightEyeY, 10f, paintYellow)
                         Log.v("eye distance", realWorldEyeDistance.toString())
 
-                        if (50.00f < realWorldEyeDistance && realWorldEyeDistance < 70.10f) {
-                            distanceList.add(PupilDistanceModel(count, realWorldEyeDistance))
-                            count++
+                        if (50.00f < realWorldEyeDistance && realWorldEyeDistance < 70.10f && count < 50) {
+                            mDistanceList.add(PupilDistanceModel(count, realWorldEyeDistance))
                             if (count >= 10){
-                                btnNext.alpha = 1f
-                                btnNext.isClickable = true
+                                runOnUiThread {
+                                    btnNext.visibility = View.VISIBLE
+                                }
                             }
+                            count++
                         }
                     }
                     x += 3
@@ -174,16 +167,23 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnNext.setOnClickListener {
-            if (distanceList.isNotEmpty() && btnNext.isClickable) {
-                handlerThread.quit()
-                startActivity(
-                    Intent(this, MainActivity2::class.java)
-                        .putExtra("distance", distanceList)
-                )
-            } else {
-                Toast.makeText(this, "Still calculating distance", Toast.LENGTH_SHORT).show()
-            }
+            distanceList.addAll(mDistanceList)
+            mDistanceList.clear()
+            Log.v("data", distanceList.toString())
+            startActivity(
+                Intent(this, MainActivity2::class.java)
+                    .putExtra("distance", distanceList)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            )
+            distanceList.clear()
         }
+
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        startActivity(Intent(this@MainActivity, AnimationActivity::class.java)
+            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
     }
 
     override fun onDestroy() {
@@ -202,7 +202,7 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("MissingPermission")
     private fun openCamera() {
         cameraManager.openCamera(
-            cameraManager.cameraIdList[0],
+            cameraManager.cameraIdList[1],
             object : CameraDevice.StateCallback() {
                 override fun onOpened(p0: CameraDevice) {
                     val captureRequest = p0.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)

@@ -9,10 +9,12 @@
 
     <TextureView
         android:id="@+id/ttv_textureView"
-        android:layout_width="match_parent"
-        android:layout_height="450dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_margin="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
@@ -20,8 +22,11 @@
         android:layout_width="match_parent"
         android:layout_height="450dp"
         android:layout_margin="10dp"
+        android:scaleType="fitXY"
         android:contentDescription="@string/img"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
@@ -30,8 +35,8 @@
         android:layout_height="480dp"
         android:layout_margin="10dp"
         android:contentDescription="@string/img"
-        android:src="@drawable/rec_1"
         android:scaleType="fitXY"
+        android:src="@drawable/rec_1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -42,9 +47,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
-        android:text="Show Distance"
+        android:text="@string/show_distance"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,4 +1,6 @@
 <resources>
-    <string name="app_name">Image Processing Test</string>
+    <string name="app_name">GKB PD Calculator</string>
     <string name="img">img</string>
+    <string name="show_distance">Show Distance</string>
+    <string name="your_pupil_distance_is">Your pupil distance is :</string>
 </resources>
